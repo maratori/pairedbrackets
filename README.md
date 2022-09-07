@@ -2,6 +2,22 @@
 
 Linter ensures that bracket starts/ends line or is paired on the same line.
 
+
+## Usage as standalone linter
+
+### Install
+
+```shell
+go install github.com/maratori/pairedbrackets@latest
+```
+
+### Run
+
+```shell
+pairedbrackets ./...
+```
+
+
 [go-img]: https://img.shields.io/github/go-mod/go-version/maratori/pairedbrackets
 [go-url]: /go.mod
 [ci-img]: https://github.com/maratori/pairedbrackets/actions/workflows/ci.yml/badge.svg
