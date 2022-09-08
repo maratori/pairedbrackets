@@ -3,6 +3,19 @@
 Linter ensures that notation rule from [this article](https://www.yegor256.com/2014/10/23/paired-brackets-notation.html) is respected:
 "a bracket should either start/end a line or be paired on the same line".
 
+```go
+http.HandleFunc("/api", func(w http.ResponseWriter, r *http.Request) {
+	...
+})
+```
+```go
+http.HandleFunc(
+	"/api",
+	func(w http.ResponseWriter, r *http.Request) {
+		...
+	},
+)
+```
 
 ## Examples
 
@@ -14,8 +27,24 @@ Linter ensures that notation rule from [this article](https://www.yegor256.com/2
 <tr><td>
 
 ```go
-func Multiline(a int,
-	b string) {
+func DoSomething(a int,
+	b string, c bool) {
+	...
+}
+```
+```go
+func DoSomething(
+	a int,
+	b string,
+	c bool) {
+	...
+}
+```
+```go
+func DoSomething(a int,
+	b string,
+	c bool,
+) {
 	...
 }
 ```
@@ -23,14 +52,56 @@ func Multiline(a int,
 </td><td>
 
 ```go
-func OneLine(a int, b string) {
+func DoSomething(a int, b string, c bool) {
 	...
 }
-
-func Multiline(
+```
+```go
+func DoSomething(
 	a int,
 	b string,
+	c bool,
 ) {
+	...
+}
+```
+```go
+func DoSomething(
+	a int, b string, c bool,
+) {
+	...
+}
+```
+```go
+func DoSomething(
+	a int, b string,
+	c bool,
+) {
+	...
+}
+```
+
+</td></tr>
+
+<tr><td>
+
+```go
+func DoSomething(a int, b string, c struct{
+	X int
+	Y string
+},
+) {
+	...
+}
+```
+
+</td><td>
+
+```go
+func DoSomething(a int, b string, c struct{
+	X int
+	Y string
+}) {
 	...
 }
 ```
@@ -46,7 +117,14 @@ func Multiline(
 <tr><td>
 
 ```go
-func Multiline[T int,
+func DoSomething[T int,
+	V string]() {
+	...
+}
+```
+```go
+func DoSomething[
+	T int,
 	V string]() {
 	...
 }
@@ -55,11 +133,12 @@ func Multiline[T int,
 </td><td>
 
 ```go
-func OneLine[T int, V string]() {
+func DoSomething[T int, V string]() {
 	...
 }
-
-func Multiline[
+```
+```go
+func DoSomething[
 	T int,
 	V string,
 ]() {
@@ -78,7 +157,15 @@ func Multiline[
 <tr><td>
 
 ```go
-func Multiline() (int,
+func DoSomething() (int,
+	error) {
+	...
+}
+```
+
+```go
+func DoSomething() (
+	int,
 	error) {
 	...
 }
@@ -87,11 +174,12 @@ func Multiline() (int,
 </td><td>
 
 ```go
-func OneLine() (int, error) {
+func DoSomething() (int, error) {
 	...
 }
-
-func Multiline() (
+```
+```go
+func DoSomething() (
 	int,
 	error,
 ) {
