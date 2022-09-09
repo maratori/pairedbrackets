@@ -1,7 +1,86 @@
 # pairedbrackets <br> [![go.mod version][go-img]][go-url] [![CI][ci-img]][ci-url] [![Codecov][codecov-img]][codecov-url] [![Codebeat][codebeat-img]][codebeat-url] [![Maintainability][codeclimate-img]][codeclimate-url] [![Go Report Card][goreportcard-img]][goreportcard-url] [![License][license-img]][license-url] [![Go Reference][godoc-img]][godoc-url]
 
+Linter checks correct formatting of paired brackets.
+
+It is inspired by [this article](https://www.yegor256.com/2014/10/23/paired-brackets-notation.html).
+
+## Rule
+
+One of the following should be respected:
+1. Either left (opening) bracket is the last character of a line (ignoring whitespaces and comments)
+2. Or it is on the same line with the last (possibly multiline) element (i.e. there is no line break between them)
+
+In the first case right (closing) bracket should be the first character of a line (ignoring whitespaces and comments).
+
+In the second case right (closing) bracket should be on the same line with the last (possibly multiline) element (i.e. there is no line break between them).
+
+<table>
+<tr></tr><tr><th>Bad left bracket</th><td>
+
+```go
+http.HandleFunc("/",
+	func(w http.ResponseWriter, r *http.Request) {
+		...
+	},
+)
+```
+> x.go:1:16: left parenthesis should either be the last character of a line or be on the same line with the last argument
+
+</td></tr>
+<tr></tr><tr><th rowspan="3">Bad right bracket</th><td>
+
+```go
+http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	...
+},
+)
+```
+> x.go:4:1: right parenthesis should be on the previous line
+
+</td></tr><tr></tr><tr><td>
+
+```go
+http.HandleFunc(
+	"/",
+	func(w http.ResponseWriter, r *http.Request) {
+		...
+	})
+```
+> x.go:5:3: right parenthesis should be on the next line
+
+</td></tr>
+<tr></tr><tr><th>Good</th><td>
+
+```go
+http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	...
+})
+```
+```go
+http.HandleFunc(
+	"/",
+	func(w http.ResponseWriter, r *http.Request) {
+		...
+	},
+)
+```
+
+</td></tr>
+</table>
+
+---
+
 Linter ensures that notation rule from [this article](https://www.yegor256.com/2014/10/23/paired-brackets-notation.html) is respected:
 "a bracket should either start/end a line or be paired on the same line".
+
+It means that both brackets and all enclosed elements should be in one line. Otherwise:
+1. after the opening bracket there is a new line
+1. a closing bracket should be on a new line
+Exception: if the last item is multiline, the closing bracket should be on the same line where the last item ends.  
+
+
+left bracket should either be the last character on a line or be on the same line with the last element
+
 
 ```go
 http.HandleFunc("/api", func(w http.ResponseWriter, r *http.Request) {
@@ -17,6 +96,29 @@ http.HandleFunc(
 )
 ```
 
+### Last item exception
+
+
+
+Brackets always enclose some list (of statements, expressions, etc).
+
+If all list items begin on the same line with the opening bracket,
+then the last item may be multiline.
+But in this case the closing bracket should be on the same line where the last item ends.
+
+
+```go
+a.Method(
+	x, y, z, func() {
+	asdf
+	asdfasd
+	a
+	sdfasdf
+},
+l,
+)
+```
+
 ## Examples
 
 ### Function parameters
@@ -29,6 +131,12 @@ http.HandleFunc(
 ```go
 func DoSomething(a int,
 	b string, c bool) {
+	...
+}
+
+func Multiline(
+	a int,
+	b string) {
 	...
 }
 ```
