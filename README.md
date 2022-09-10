@@ -1,14 +1,14 @@
 # pairedbrackets <br> [![go.mod version][go-img]][go-url] [![CI][ci-img]][ci-url] [![Codecov][codecov-img]][codecov-url] [![Codebeat][codebeat-img]][codebeat-url] [![Maintainability][codeclimate-img]][codeclimate-url] [![Go Report Card][goreportcard-img]][goreportcard-url] [![License][license-img]][license-url] [![Go Reference][godoc-img]][godoc-url]
 
-Linter checks correct formatting of paired brackets (inspired by [this article](https://www.yegor256.com/2014/10/23/paired-brackets-notation.html)).
+Linter checks formatting of paired brackets (inspired by [this article](https://www.yegor256.com/2014/10/23/paired-brackets-notation.html)).
 
-## Rule
+## Rule (v1)
 
 One of the following should be respected (ignoring whitespaces and comments):
 1. Left (opening) bracket is the last character of a line.  
    In this case, right (closing) bracket should be on the new line.  
 2. Left bracket is on the same line with the last (possibly multiline) element, i.e. there is no line break between them.  
-  In this case, right bracket should be on the same line with the last (possibly multiline) element.
+   In this case, right bracket should be on the same line with the last (possibly multiline) element.
 
 <table>
 <tr></tr><tr><th>Bad left bracket</th><td>
@@ -56,7 +56,7 @@ http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 })
 ```
 ```go
-http.HandleFunc(
+http.HandleFunc( // comments and whitespaces are ignored
 	"/",
 	func(w http.ResponseWriter, r *http.Request) {
 		...
@@ -67,11 +67,7 @@ http.HandleFunc(
 </td></tr>
 </table>
 
----
-
-Linter checks formatting of paired brackets (inspired by [this article](https://www.yegor256.com/2014/10/23/paired-brackets-notation.html)).
-
-## Rule
+## Rule (v2)
 
 According to the original [notation](https://www.yegor256.com/2014/10/23/paired-brackets-notation.html), "a bracket should either start/end a line or be paired on the same line".  
 With modification for multiline items, the following cases are allowed:
