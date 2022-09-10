@@ -93,8 +93,7 @@ With modification for multiline items, the following cases are allowed:
    })
    ```
 
-<br>
-Example of linter reports:
+#### Example of linter reports:
 
 ```go
                ⬇
