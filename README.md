@@ -2,7 +2,7 @@
 
 Linter checks formatting of paired brackets (inspired by [this article](https://www.yegor256.com/2014/10/23/paired-brackets-notation.html)).
 
-## Rule (v1)
+## Rule
 
 One of the following should be respected (ignoring whitespaces and comments):
 1. Left (opening) bracket is the last character of a line.  
@@ -67,65 +67,10 @@ http.HandleFunc( // comments and whitespaces are ignored
 </td></tr>
 </table>
 
-## Rule (v2)
-
-According to the original [notation](https://www.yegor256.com/2014/10/23/paired-brackets-notation.html), "a bracket should either start/end a line or be paired on the same line".  
-With modification for multiline items, the following cases are allowed:
-1. Both brackets and all items are in one line.
-   ```go
-   fmt.Printf("%s %s", "Hello", "world!")
-   ```
-1. Left (opening) bracket is the last character of a line and right (closing) bracket starts a new line.
-   ```go
-   fmt.Printf( // comments and whitespaces are ignored
-   	"%s %s", "Hello", "world!",
-   )
-   ```
-1. If the last item is multiline, it can start on the same line with the opening bracket.  
-   In this case, the closing bracket should be on the same line where the last item ends.     
-   ```go
-   http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-   	...
-   })
-   ```
-
-#### Example of linter reports:
-
-```go
-               ⬇
-http.HandleFunc("/",
-	func(w http.ResponseWriter, r *http.Request) {
-		...
-	},
-)
-```
-> x.go:1:16: left parenthesis should either be the last character of a line or be on the same line with the last argument
-
-<br>
-
-```go
-http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-	...
-},
-)
-⬆
-```
-> x.go:4:1: right parenthesis should be on the previous line
-
-<br>
-
-```go
-http.HandleFunc(
-	"/",
-	func(w http.ResponseWriter, r *http.Request) {
-		...
-	})
-	 ⬆
-```
-> x.go:5:3: right parenthesis should be on the next line
-
 
 ## Examples
+
+TODO: add more examples
 
 ### Function parameters
 
