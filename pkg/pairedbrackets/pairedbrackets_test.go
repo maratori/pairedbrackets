@@ -19,3 +19,15 @@ func TestAnalyzer_WithGofmt(t *testing.T) {
 
 	analysistest.Run(t, testdata, pairedbrackets.NewAnalyzer(), "./...")
 }
+
+func TestAnalyzer_NoGofmt(t *testing.T) {
+	t.Parallel()
+
+	// `golangci-lint` and `go fmt` ignore `testdata` dir
+	testdata, err := filepath.Abs("testdata")
+	if err != nil {
+		t.FailNow()
+	}
+
+	analysistest.Run(t, testdata, pairedbrackets.NewAnalyzer(), "./...")
+}
