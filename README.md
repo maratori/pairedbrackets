@@ -96,9 +96,6 @@ With modification for multiline items, the following cases are allowed:
 <br>
 Example of linter reports:
 
-<table>
-<tr></tr><tr><td>
-
 ```go
                ⬇
 http.HandleFunc("/",
@@ -109,8 +106,7 @@ http.HandleFunc("/",
 ```
 > x.go:1:16: left parenthesis should either be the last character of a line or be on the same line with the last argument
 
-</td></tr>
-<tr></tr><tr><td>
+<br>
 
 ```go
 http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
@@ -121,8 +117,7 @@ http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 ```
 > x.go:4:1: right parenthesis should be on the previous line
 
-</td></tr>
-<tr></tr><tr><td>
+<br>
 
 ```go
 http.HandleFunc(
@@ -133,9 +128,6 @@ http.HandleFunc(
 	 ⬆
 ```
 > x.go:5:3: right parenthesis should be on the next line
-
-</td></tr>
-</table>
 
 
 ## Examples
