@@ -69,54 +69,74 @@ http.HandleFunc(
 
 ---
 
-Linter ensures that notation rule from [this article](https://www.yegor256.com/2014/10/23/paired-brackets-notation.html) is respected:
-"a bracket should either start/end a line or be paired on the same line".
+Linter checks formatting of paired brackets (inspired by [this article](https://www.yegor256.com/2014/10/23/paired-brackets-notation.html)).
 
-It means that both brackets and all enclosed elements should be in one line. Otherwise:
-1. after the opening bracket there is a new line
-1. a closing bracket should be on a new line
-Exception: if the last item is multiline, the closing bracket should be on the same line where the last item ends.  
+## Rule
 
+According to the original [notation](https://www.yegor256.com/2014/10/23/paired-brackets-notation.html), "a bracket should either start/end a line or be paired on the same line".  
+With modification for multiline items, the following cases are allowed:
+1. Both brackets and all items are in one line.
+   ```go
+   fmt.Printf("%s %s", "Hello", "world!")
+   ```
+1. Left (opening) bracket is the last character of a line and right (closing) bracket starts a new line.
+   ```go
+   fmt.Printf( // comments and whitespaces are ignored
+   	"%s %s", "Hello", "world!",
+   )
+   ```
+1. If the last item is multiline, it can start on the same line with the opening bracket.  
+   In this case, the closing bracket should be on the same line where the last item ends.     
+   ```go
+   http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+   	...
+   })
+   ```
 
-left bracket should either be the last character on a line or be on the same line with the last element
+<br>
+Example of linter reports:
 
+<table>
+<tr></tr><tr><td>
 
 ```go
-http.HandleFunc("/api", func(w http.ResponseWriter, r *http.Request) {
-	...
-})
-```
-```go
-http.HandleFunc(
-	"/api",
+               ⬇
+http.HandleFunc("/",
 	func(w http.ResponseWriter, r *http.Request) {
 		...
 	},
 )
 ```
+> x.go:1:16: left parenthesis should either be the last character of a line or be on the same line with the last argument
 
-### Last item exception
-
-
-
-Brackets always enclose some list (of statements, expressions, etc).
-
-If all list items begin on the same line with the opening bracket,
-then the last item may be multiline.
-But in this case the closing bracket should be on the same line where the last item ends.
-
+</td></tr>
+<tr></tr><tr><td>
 
 ```go
-a.Method(
-	x, y, z, func() {
-	asdf
-	asdfasd
-	a
-	sdfasdf
+http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	...
 },
-l,
 )
+⬆
 ```
+> x.go:4:1: right parenthesis should be on the previous line
+
+</td></tr>
+<tr></tr><tr><td>
+
+```go
+http.HandleFunc(
+	"/",
+	func(w http.ResponseWriter, r *http.Request) {
+		...
+	})
+	 ⬆
+```
+> x.go:5:3: right parenthesis should be on the next line
+
+</td></tr>
+</table>
+
 
 ## Examples
 
