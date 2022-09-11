@@ -409,6 +409,34 @@ func Bar() (int, interface {
 `gofumpt` is just a slightly better than `gofmt`. It fixes some composite literal examples above. But not all of them, and it doesn't fix other examples.
 
 
+## Usage
+
+
+The best way is to use [golangci-lint](https://golangci-lint.run/).  
+It includes [pairedbrackets](https://golangci-lint.run/usage/linters/#list-item-pairedbrackets) and a lot of other great linters.
+
+### Install
+
+See [official site](https://golangci-lint.run/usage/install/).
+
+### Enable
+
+`pairedbrackets` is disabled by default.  
+To enable it, add the following to your `.golangci.yml`:
+
+```yaml
+linters:
+  enable:
+     pairedbrackets
+```
+
+### Run
+
+```shell
+golangci-lint run
+```
+
+
 ## Usage as standalone linter
 
 ### Install
@@ -422,6 +450,11 @@ go install github.com/maratori/pairedbrackets@latest
 ```shell
 pairedbrackets ./...
 ```
+
+
+## License
+
+[MIT License][license-url]
 
 
 [go-img]: https://img.shields.io/github/go-mod/go-version/maratori/pairedbrackets
