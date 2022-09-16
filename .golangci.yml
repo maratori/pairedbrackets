@@ -272,3 +272,13 @@ issues:
         - gosec
         - noctx
         - wrapcheck
+
+    # specific to pairedbrackets
+    - path: "testfiles"
+      linters:
+        - forbidigo
+        - godot
+        - gomnd
+        - lll
+        - unused
+        - whitespace

@@ -8,12 +8,12 @@ help: ## show this message
 
 test: ## run all tests
 	@echo "+ $@"
-	go test -race -p 8 -parallel 8 -timeout 1m ./...
+	go test -race -count 1 -p 8 -parallel 8 -timeout 1m ./...
 .PHONY: test
 
 test-cover: ## run all tests with code coverage
 	@echo "+ $@"
-	go test -race -p 8 -parallel 8 -timeout 1m -coverpkg ./... -coverprofile coverage.out ./...
+	go test -race -count 1 -p 8 -parallel 8 -timeout 1m -coverpkg ./... -coverprofile coverage.out ./...
 .PHONY: test-cover
 
 lint: build-docker-dev ## run linter
