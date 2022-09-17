@@ -46,3 +46,8 @@ func TestBoundariesNotSorted(t *testing.T) {
 	assert.EqualValues(t, 102, lastEnd)
 	assert.True(t, ok)
 }
+
+// This test is written to get 100% code coverage.
+func TestCommaListRegexpFlag_String(t *testing.T) {
+	assert.Equal(t, "", (*commaListRegexpFlag)(nil).String())
+}
