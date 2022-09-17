@@ -113,6 +113,9 @@ is multiline`)
 
 </td></tr>
 </tbody></table>
+
+Functions from `github.com/stretchr/testify/assert` and `github.com/stretchr/testify/require` are ignored by default (see [config](#config)).
+
 </details>
 
 <details><summary>Composite literal</summary>
@@ -430,6 +433,22 @@ linters:
      pairedbrackets
 ```
 
+### Config
+
+Here is available configuration:
+```yaml
+linters-settings:
+  pairedbrackets:
+    # List of regexp patterns of fully qualified function calls to ignore.
+    # Example of fully qualified function: github.com/stretchr/testify/require.Equal
+    # Example of fully qualified method: (*github.com/stretchr/testify/assert.Assertions).Equal
+    # Default: ["github.com/stretchr/testify/assert", "github.com/stretchr/testify/require"]
+    ignore-func-calls:
+      - github.com/stretchr/testify/assert
+      - github.com/stretchr/testify/require
+      - ^fmt\.
+```
+
 ### Run
 
 ```shell
@@ -450,6 +469,14 @@ go install github.com/maratori/pairedbrackets@latest
 ```shell
 pairedbrackets ./...
 ```
+
+### Flag `-ignore-func-calls`
+
+Flag `-ignore-func-calls` is a comma separated list of regexp patterns of fully qualified function calls to ignore. Default is `github.com/stretchr/testify/assert,github.com/stretchr/testify/require`.
+
+Fully qualified function examples:
+- Function: `github.com/stretchr/testify/require.Equal`
+- Method: `(*github.com/stretchr/testify/assert.Assertions).Equal`
 
 
 ## License
