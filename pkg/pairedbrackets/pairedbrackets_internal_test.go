@@ -12,7 +12,7 @@ import (
 // This test is written to get 100% code coverage.
 func TestGenDeclElement(t *testing.T) {
 	t.Parallel()
-	tests := map[token.Token]Element{
+	tests := map[token.Token]Element{ //nolint:exhaustive // no need to test all tokens
 		token.AND:    Unknown,
 		token.CONST:  Constant,
 		token.IMPORT: Import,
