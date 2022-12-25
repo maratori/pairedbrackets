@@ -4,14 +4,10 @@ import (
 	"flag"
 	"go/ast"
 	"go/token"
-	"go/types"
-	"regexp"
-	"strings"
 
 	"golang.org/x/tools/go/analysis"
 	"golang.org/x/tools/go/analysis/passes/inspect"
 	"golang.org/x/tools/go/ast/inspector"
-	"golang.org/x/tools/go/types/typeutil"
 )
 
 type Name string
@@ -43,24 +39,11 @@ const (
 	Variable         Element = "variable"
 )
 
-// Fully qualified function examples:
-//   - github.com/stretchr/testify/require.Equal
-//   - (*github.com/stretchr/testify/assert.Assertions).Equal
-const (
-	IgnoreFuncCallsFlagName    = "ignore-func-calls"
-	IgnoreFuncCallsFlagUsage   = "comma separated list of regexp patterns of fully qualified function calls to ignore"
-	IgnoreFuncCallsFlagDefault = "github.com/stretchr/testify/assert,github.com/stretchr/testify/require"
-)
-
 // NewAnalyzer returns Analyzer that checks formatting of paired brackets.
 func NewAnalyzer() *analysis.Analyzer {
 	var (
-		ignoreFuncCalls commaListRegexpFlag
-		fs              flag.FlagSet
+		fs flag.FlagSet
 	)
-
-	_ = ignoreFuncCalls.Set(IgnoreFuncCallsFlagDefault)
-	fs.Var(&ignoreFuncCalls, IgnoreFuncCallsFlagName, IgnoreFuncCallsFlagUsage)
 
 	return &analysis.Analyzer{
 		Name:     "pairedbrackets",
@@ -69,16 +52,14 @@ func NewAnalyzer() *analysis.Analyzer {
 		Flags:    fs,
 		Run: func(pass *analysis.Pass) (interface{}, error) {
 			return run(runner{
-				ignoreFuncCalls: &ignoreFuncCalls,
-				pass:            pass,
+				pass: pass,
 			})
 		},
 	}
 }
 
 type runner struct {
-	ignoreFuncCalls *commaListRegexpFlag
-	pass            *analysis.Pass
+	pass *analysis.Pass
 }
 
 // Run runs the analyzer.
@@ -163,7 +144,7 @@ func run(r runner) (interface{}, error) {
 	astInspector.Preorder(filter, func(node ast.Node) {
 		switch n := node.(type) {
 		case *ast.CallExpr:
-			validateCall(r, n)
+			validate(r, Parenthesis, n.Lparen, n.Rparen, n.Args, Argument)
 		case *ast.CompositeLit:
 			validate(r, Brace, n.Lbrace, n.Rbrace, n.Elts, CompositeElement)
 		case *ast.ForStmt:
@@ -214,18 +195,6 @@ func run(r runner) (interface{}, error) {
 	})
 
 	return nil, nil //nolint:nilnil // the linter has no result, it should return nil
-}
-
-func validateCall(r runner, node *ast.CallExpr) {
-	if callee := typeutil.Callee(r.pass.TypesInfo, node); callee != nil {
-		if fn, ok := callee.(*types.Func); ok {
-			if r.ignoreFuncCalls.Match(fn.FullName()) {
-				return
-			}
-		}
-	}
-
-	validate(r, Parenthesis, node.Lparen, node.Rparen, node.Args, Argument)
 }
 
 func validateFieldList(r runner, name Name, node *ast.FieldList, element Element) {
@@ -348,39 +317,4 @@ func boundaries[N ast.Node](list []N) (token.Pos, token.Pos, token.Pos, bool) {
 	}
 
 	return firstPos, lastPos, lastEnd, ok
-}
-
-type commaListRegexpFlag struct {
-	original string
-	regs     []*regexp.Regexp
-}
-
-func (f *commaListRegexpFlag) String() string {
-	if f == nil {
-		return ""
-	}
-	return f.original
-}
-
-func (f *commaListRegexpFlag) Set(value string) error {
-	regs := make([]*regexp.Regexp, 0, len(value))
-	for _, pattern := range strings.Split(value, ",") {
-		re, err := regexp.Compile(pattern)
-		if err != nil {
-			return err
-		}
-		regs = append(regs, re)
-	}
-	f.original = value
-	f.regs = regs
-	return nil
-}
-
-func (f *commaListRegexpFlag) Match(s string) bool {
-	for _, r := range f.regs {
-		if r.MatchString(s) {
-			return true
-		}
-	}
-	return false
 }
