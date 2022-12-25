@@ -114,7 +114,7 @@ is multiline`)
 </td></tr>
 </tbody></table>
 
-Functions from `github.com/stretchr/testify/assert` and `github.com/stretchr/testify/require` are ignored by default (see [config](#config)).
+Functions from `github.com/stretchr/testify/assert` and `github.com/stretchr/testify/require` are ignored by default (see [config](#flag--ignore-func-calls)).
 
 </details>
 
@@ -415,38 +415,46 @@ func Bar() (int, interface {
 ## Usage
 
 
-The best way is to use [golangci-lint](https://golangci-lint.run/).  
-It includes [pairedbrackets](https://golangci-lint.run/usage/linters/#list-item-pairedbrackets) and a lot of other great linters.
+You can use [golangci-lint](https://golangci-lint.run/).  
+Unfortunately, v1 was rejected to be a built-in linter (hopefully v2 will be accepted).
+You can configure `pairedbrackets` as a [plugin](https://golangci-lint.run/contributing/new-linters#how-to-add-a-private-linter-to-golangci-lint).
 
-### Install
+### Install `golangci-lint`
 
-See [official site](https://golangci-lint.run/usage/install/).
+Prebuilt binaries doesn't support plugins (see [discussion](https://github.com/golangci/golangci-lint/discussions/3361)), so you have to build golangci-lint:
+```shell
+go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+```
 
-### Enable
+### Install `pairedbrackets`
+
+```shell
+go install github.com/maratori/pairedbrackets@latest
+```
+
+### Build plugin
+
+```shell
+pairedbrackets -build-golangci-lint-plugin
+```
+
+`pairedbrackets.so` will be created in current working directory. You can change the output path with flag `-plugin-output` (see other flags in help as well).
+
+### Config
 
 `pairedbrackets` is disabled by default.  
 To enable it, add the following to your `.golangci.yml`:
 
 ```yaml
+linters-settings:
+  custom:
+     pairedbrackets:
+        path: /path/to/plugin/pairedbrackets.so
+        description: The linter checks formatting of paired brackets
+        original-url: github.com/maratori/pairedbrackets
 linters:
   enable:
      pairedbrackets
-```
-
-### Config
-
-Here is available configuration:
-```yaml
-linters-settings:
-  pairedbrackets:
-    # List of regexp patterns of fully qualified function calls to ignore.
-    # Example of fully qualified function: github.com/stretchr/testify/require.Equal
-    # Example of fully qualified method: (*github.com/stretchr/testify/assert.Assertions).Equal
-    # Default: ["github.com/stretchr/testify/assert", "github.com/stretchr/testify/require"]
-    ignore-func-calls:
-      - github.com/stretchr/testify/assert
-      - github.com/stretchr/testify/require
-      - ^fmt\.
 ```
 
 ### Run
