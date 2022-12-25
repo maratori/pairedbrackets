@@ -63,19 +63,9 @@ func main() {
 }
 
 func buildPlugin(goPath string, linterPath string, outputPath string) error {
-	linterPath, err := exec.LookPath(linterPath)
+	goPath, linterPath, outputPath, err := resolvePaths(goPath, linterPath, outputPath)
 	if err != nil {
-		return fmt.Errorf("golangci-lint not found: %w", err)
-	}
-
-	goPath, err = exec.LookPath(goPath)
-	if err != nil {
-		return fmt.Errorf("go not found: %w", err)
-	}
-
-	outputPath, err = filepath.Abs(outputPath)
-	if err != nil {
-		return fmt.Errorf("can't get absolute output path: %w", err)
+		return err
 	}
 
 	output, err := exec.Command(goPath, "version", "-m", linterPath).CombinedOutput()
@@ -95,31 +85,9 @@ func buildPlugin(goPath string, linterPath string, outputPath string) error {
 	}
 	defer os.RemoveAll(temp)
 
-	err = fs.WalkDir(self, ".", func(path string, d fs.DirEntry, errX error) error {
-		if errX != nil {
-			return errX
-		}
-
-		fullPath := filepath.Join(temp, path)
-
-		if d.IsDir() {
-			return os.MkdirAll(fullPath, 0700)
-		}
-
-		content, errX := fs.ReadFile(self, path)
-		if errX != nil {
-			return errX
-		}
-
-		errX = os.WriteFile(fullPath, content, 0600)
-		if errX != nil {
-			return errX
-		}
-
-		return nil
-	})
+	err = writeSelfSourceCodeToDisk(temp)
 	if err != nil {
-		return fmt.Errorf("can't write pairedbrackets src: %w", err)
+		return fmt.Errorf("can't write pairedbrackets source code: %w", err)
 	}
 
 	err = os.Chdir(temp)
@@ -147,4 +115,49 @@ func buildPlugin(goPath string, linterPath string, outputPath string) error {
 	fmt.Printf("pairedbrackets.so is built with %s\n", lib) //nolint:forbidigo // better than log
 
 	return nil
+}
+
+func resolvePaths(goPath string, linterPath string, outputPath string) (string, string, string, error) {
+	goPath, err := exec.LookPath(goPath)
+	if err != nil {
+		return "", "", "", fmt.Errorf("go not found: %w", err)
+	}
+
+	linterPath, err = exec.LookPath(linterPath)
+	if err != nil {
+		return "", "", "", fmt.Errorf("golangci-lint not found: %w", err)
+	}
+
+	outputPath, err = filepath.Abs(outputPath)
+	if err != nil {
+		return "", "", "", fmt.Errorf("can't get absolute output path: %w", err)
+	}
+
+	return goPath, linterPath, outputPath, nil
+}
+
+func writeSelfSourceCodeToDisk(temp string) error {
+	return fs.WalkDir(self, ".", func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+
+		fullPath := filepath.Join(temp, path)
+
+		if d.IsDir() {
+			return os.MkdirAll(fullPath, 0700)
+		}
+
+		content, err := fs.ReadFile(self, path)
+		if err != nil {
+			return err
+		}
+
+		err = os.WriteFile(fullPath, content, 0600)
+		if err != nil {
+			return err
+		}
+
+		return nil
+	})
 }
