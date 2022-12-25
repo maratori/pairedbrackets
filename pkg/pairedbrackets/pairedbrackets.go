@@ -67,11 +67,21 @@ func NewAnalyzer() *analysis.Analyzer {
 		Doc:      "linter checks formatting of paired brackets",
 		Requires: []*analysis.Analyzer{inspect.Analyzer},
 		Flags:    fs,
-		Run:      runner(&ignoreFuncCalls),
+		Run: func(pass *analysis.Pass) (interface{}, error) {
+			return run(runner{
+				ignoreFuncCalls: &ignoreFuncCalls,
+				pass:            pass,
+			})
+		},
 	}
 }
 
-// runner returns run function for analyzer.
+type runner struct {
+	ignoreFuncCalls *commaListRegexpFlag
+	pass            *analysis.Pass
+}
+
+// Run runs the analyzer.
 //
 // Nodes without brackets (alphabet order):
 //   - [*ast.AssignStmt]
@@ -126,114 +136,112 @@ func NewAnalyzer() *analysis.Analyzer {
 //   - [*ast.InterfaceType]
 //   - [*ast.StructType]
 //   - [*ast.TypeSpec]
-func runner(ignoreFuncCalls *commaListRegexpFlag) func(*analysis.Pass) (interface{}, error) {
-	return func(pass *analysis.Pass) (interface{}, error) {
-		filter := []ast.Node{ // alphabet order
-			&ast.CallExpr{},
-			&ast.CompositeLit{},
-			&ast.ForStmt{},
-			&ast.FuncDecl{},
-			&ast.FuncLit{},
-			&ast.FuncType{},
-			&ast.GenDecl{},
-			&ast.IfStmt{},
-			&ast.IndexExpr{},
-			&ast.IndexListExpr{},
-			&ast.InterfaceType{},
-			&ast.ParenExpr{},
-			&ast.RangeStmt{},
-			&ast.SelectStmt{},
-			&ast.SliceExpr{},
-			&ast.StructType{},
-			&ast.SwitchStmt{},
-			&ast.TypeAssertExpr{},
-			&ast.TypeSpec{},
-			&ast.TypeSwitchStmt{},
-		}
-		astInspector := pass.ResultOf[inspect.Analyzer].(*inspector.Inspector) //nolint:errcheck // let's panic
-		astInspector.Preorder(filter, func(node ast.Node) {
-			switch n := node.(type) {
-			case *ast.CallExpr:
-				validateCall(pass, n, ignoreFuncCalls)
-			case *ast.CompositeLit:
-				validate(pass, Brace, n.Lbrace, n.Rbrace, n.Elts, CompositeElement)
-			case *ast.ForStmt:
-				validateBlock(pass, n.Body)
-			case *ast.FuncDecl:
-				// n.Type is checked separately in [*ast.FuncType]
-				validateFieldList(pass, Parenthesis, n.Recv, Receiver)
-				validateBlock(pass, n.Body)
-			case *ast.FuncLit:
-				// n.Type is checked separately in [*ast.FuncType]
-				validateBlock(pass, n.Body)
-			case *ast.FuncType:
-				validateFieldList(pass, Bracket, n.TypeParams, TypeParameter)
-				validateFieldList(pass, Parenthesis, n.Params, Parameter)
-				validateFieldList(pass, Parenthesis, n.Results, Result)
-			case *ast.GenDecl:
-				validate(pass, Parenthesis, n.Lparen, n.Rparen, n.Specs, genDeclElement(n))
-			case *ast.IfStmt:
-				validateBlock(pass, n.Body)
-				if block, ok := n.Else.(*ast.BlockStmt); ok {
-					validateBlock(pass, block)
-				}
-			case *ast.IndexExpr:
-				validate(pass, Bracket, n.Lbrack, n.Rbrack, []ast.Expr{n.Index}, Unknown) // unknown because it may be several types
-			case *ast.IndexListExpr:
-				validate(pass, Bracket, n.Lbrack, n.Rbrack, n.Indices, Unknown) // unknown because it may be several types
-			case *ast.InterfaceType:
-				validateFieldList(pass, Brace, n.Methods, Method)
-			case *ast.ParenExpr:
-				validate(pass, Parenthesis, n.Lparen, n.Rparen, []ast.Expr{n.X}, Expression)
-			case *ast.RangeStmt:
-				validateBlock(pass, n.Body)
-			case *ast.SelectStmt:
-				validateBlock(pass, n.Body)
-			case *ast.SliceExpr:
-				validate(pass, Bracket, n.Lbrack, n.Rbrack, []ast.Expr{n.Low, n.High, n.Max}, Index)
-			case *ast.StructType:
-				validateFieldList(pass, Brace, n.Fields, Field)
-			case *ast.SwitchStmt:
-				validateBlock(pass, n.Body)
-			case *ast.TypeAssertExpr:
-				validate(pass, Parenthesis, n.Lparen, n.Rparen, []ast.Expr{n.Type}, Type)
-			case *ast.TypeSpec:
-				validateFieldList(pass, Bracket, n.TypeParams, TypeParameter)
-			case *ast.TypeSwitchStmt:
-				validateBlock(pass, n.Body)
-			}
-		})
-
-		return nil, nil
+func run(r runner) (interface{}, error) {
+	filter := []ast.Node{ // alphabet order
+		&ast.CallExpr{},
+		&ast.CompositeLit{},
+		&ast.ForStmt{},
+		&ast.FuncDecl{},
+		&ast.FuncLit{},
+		&ast.FuncType{},
+		&ast.GenDecl{},
+		&ast.IfStmt{},
+		&ast.IndexExpr{},
+		&ast.IndexListExpr{},
+		&ast.InterfaceType{},
+		&ast.ParenExpr{},
+		&ast.RangeStmt{},
+		&ast.SelectStmt{},
+		&ast.SliceExpr{},
+		&ast.StructType{},
+		&ast.SwitchStmt{},
+		&ast.TypeAssertExpr{},
+		&ast.TypeSpec{},
+		&ast.TypeSwitchStmt{},
 	}
+	astInspector := r.pass.ResultOf[inspect.Analyzer].(*inspector.Inspector) //nolint:errcheck // let's panic
+	astInspector.Preorder(filter, func(node ast.Node) {
+		switch n := node.(type) {
+		case *ast.CallExpr:
+			validateCall(r, n)
+		case *ast.CompositeLit:
+			validate(r, Brace, n.Lbrace, n.Rbrace, n.Elts, CompositeElement)
+		case *ast.ForStmt:
+			validateBlock(r, n.Body)
+		case *ast.FuncDecl:
+			// n.Type is checked separately in [*ast.FuncType]
+			validateFieldList(r, Parenthesis, n.Recv, Receiver)
+			validateBlock(r, n.Body)
+		case *ast.FuncLit:
+			// n.Type is checked separately in [*ast.FuncType]
+			validateBlock(r, n.Body)
+		case *ast.FuncType:
+			validateFieldList(r, Bracket, n.TypeParams, TypeParameter)
+			validateFieldList(r, Parenthesis, n.Params, Parameter)
+			validateFieldList(r, Parenthesis, n.Results, Result)
+		case *ast.GenDecl:
+			validate(r, Parenthesis, n.Lparen, n.Rparen, n.Specs, genDeclElement(n))
+		case *ast.IfStmt:
+			validateBlock(r, n.Body)
+			if block, ok := n.Else.(*ast.BlockStmt); ok {
+				validateBlock(r, block)
+			}
+		case *ast.IndexExpr:
+			validate(r, Bracket, n.Lbrack, n.Rbrack, []ast.Expr{n.Index}, Unknown) // unknown because it may be several types
+		case *ast.IndexListExpr:
+			validate(r, Bracket, n.Lbrack, n.Rbrack, n.Indices, Unknown) // unknown because it may be several types
+		case *ast.InterfaceType:
+			validateFieldList(r, Brace, n.Methods, Method)
+		case *ast.ParenExpr:
+			validate(r, Parenthesis, n.Lparen, n.Rparen, []ast.Expr{n.X}, Expression)
+		case *ast.RangeStmt:
+			validateBlock(r, n.Body)
+		case *ast.SelectStmt:
+			validateBlock(r, n.Body)
+		case *ast.SliceExpr:
+			validate(r, Bracket, n.Lbrack, n.Rbrack, []ast.Expr{n.Low, n.High, n.Max}, Index)
+		case *ast.StructType:
+			validateFieldList(r, Brace, n.Fields, Field)
+		case *ast.SwitchStmt:
+			validateBlock(r, n.Body)
+		case *ast.TypeAssertExpr:
+			validate(r, Parenthesis, n.Lparen, n.Rparen, []ast.Expr{n.Type}, Type)
+		case *ast.TypeSpec:
+			validateFieldList(r, Bracket, n.TypeParams, TypeParameter)
+		case *ast.TypeSwitchStmt:
+			validateBlock(r, n.Body)
+		}
+	})
+
+	return nil, nil //nolint:nilnil // the linter has no result, it should return nil
 }
 
-func validateCall(pass *analysis.Pass, node *ast.CallExpr, ignoreFuncCalls *commaListRegexpFlag) {
-	if callee := typeutil.Callee(pass.TypesInfo, node); callee != nil {
+func validateCall(r runner, node *ast.CallExpr) {
+	if callee := typeutil.Callee(r.pass.TypesInfo, node); callee != nil {
 		if fn, ok := callee.(*types.Func); ok {
-			if ignoreFuncCalls.Match(fn.FullName()) {
+			if r.ignoreFuncCalls.Match(fn.FullName()) {
 				return
 			}
 		}
 	}
 
-	validate(pass, Parenthesis, node.Lparen, node.Rparen, node.Args, Argument)
+	validate(r, Parenthesis, node.Lparen, node.Rparen, node.Args, Argument)
 }
 
-func validateFieldList(pass *analysis.Pass, name Name, node *ast.FieldList, element Element) {
+func validateFieldList(r runner, name Name, node *ast.FieldList, element Element) {
 	if node == nil {
 		return
 	}
 
-	validate(pass, name, node.Opening, node.Closing, node.List, element)
+	validate(r, name, node.Opening, node.Closing, node.List, element)
 }
 
-func validateBlock(pass *analysis.Pass, node *ast.BlockStmt) {
+func validateBlock(r runner, node *ast.BlockStmt) {
 	if node == nil {
 		return
 	}
 
-	validate(pass, Brace, node.Lbrace, node.Rbrace, node.List, Statement)
+	validate(r, Brace, node.Lbrace, node.Rbrace, node.List, Statement)
 }
 
 func genDeclElement(node *ast.GenDecl) Element {
@@ -251,13 +259,13 @@ func genDeclElement(node *ast.GenDecl) Element {
 	}
 }
 
-func validate[N ast.Node](pass *analysis.Pass, bracket Name, left, right token.Pos, list []N, element Element) {
+func validate[N ast.Node](r runner, bracket Name, left, right token.Pos, list []N, element Element) {
 	if left == token.NoPos || right == token.NoPos {
 		return // no brackets - nothing to check
 	}
 
-	leftLine := pass.Fset.Position(left).Line
-	rightLine := pass.Fset.Position(right).Line
+	leftLine := r.pass.Fset.Position(left).Line
+	rightLine := r.pass.Fset.Position(right).Line
 
 	if leftLine == rightLine {
 		return
@@ -271,24 +279,24 @@ func validate[N ast.Node](pass *analysis.Pass, bracket Name, left, right token.P
 		return // list is empty
 	}
 
-	firstPosLine := pass.Fset.Position(firstPos).Line
+	firstPosLine := r.pass.Fset.Position(firstPos).Line
 	lastPosLine := firstPosLine // optimisation
 	if lastPos != firstPos {
-		lastPosLine = pass.Fset.Position(lastPos).Line
+		lastPosLine = r.pass.Fset.Position(lastPos).Line
 	}
-	lastEndLine := pass.Fset.Position(lastEnd).Line
+	lastEndLine := r.pass.Fset.Position(lastEnd).Line
 
 	switch {
 	case leftLine == lastPosLine: // left bracket is ok
 		if lastEndLine != rightLine {
-			pass.Reportf(right, "right %s should be on the previous line", bracket)
+			r.pass.Reportf(right, "right %s should be on the previous line", bracket)
 		}
 	case leftLine != firstPosLine: // left bracket is ok
 		if lastEndLine == rightLine {
-			pass.Reportf(right, "right %s should be on the next line", bracket)
+			r.pass.Reportf(right, "right %s should be on the next line", bracket)
 		}
 	default:
-		pass.Reportf(
+		r.pass.Reportf(
 			left,
 			"left %s should either be the last character on a line or be on the same line with the last %s",
 			bracket,
