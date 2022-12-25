@@ -50,7 +50,7 @@ func _() {
 		10) // want `^right parenthesis should be on the next line$`
 
 	// bad right - previous, one line
-	// ../../testdata/no_go_fmt/ast_call_expr.go
+	// ../../../testdata/no_go_fmt/strict/ast_call_expr.go
 
 	// bad right - previous, multiline
 	http.HandleFunc("/api/v1", func(w http.ResponseWriter, r *http.Request) {

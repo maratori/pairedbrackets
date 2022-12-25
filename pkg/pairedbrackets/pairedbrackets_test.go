@@ -8,7 +8,7 @@ import (
 	"golang.org/x/tools/go/analysis/analysistest"
 )
 
-func TestAnalyzer_WithGofmt(t *testing.T) {
+func TestAnalyzer_WithGofmt_Strict(t *testing.T) {
 	t.Parallel()
 
 	// dir is named `testfiles` not `testdata` to be able to run `golangci-lint` and `go fmt` for these files
@@ -17,10 +17,10 @@ func TestAnalyzer_WithGofmt(t *testing.T) {
 		t.FailNow()
 	}
 
-	analysistest.Run(t, testdata, pairedbrackets.NewAnalyzer(), "./...")
+	analysistest.Run(t, testdata, pairedbrackets.NewAnalyzer(), "./with_go_fmt/strict")
 }
 
-func TestAnalyzer_NoGofmt(t *testing.T) {
+func TestAnalyzer_NoGofmt_Strict(t *testing.T) {
 	t.Parallel()
 
 	// `golangci-lint` and `go fmt` ignore `testdata` dir
@@ -29,5 +29,5 @@ func TestAnalyzer_NoGofmt(t *testing.T) {
 		t.FailNow()
 	}
 
-	analysistest.Run(t, testdata, pairedbrackets.NewAnalyzer(), "./no_go_fmt")
+	analysistest.Run(t, testdata, pairedbrackets.NewAnalyzer(), "./no_go_fmt/strict")
 }

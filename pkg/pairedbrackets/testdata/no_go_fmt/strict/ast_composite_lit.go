@@ -2,7 +2,7 @@ package x
 
 func _() {
 
-	// other tests: ../../testfiles/with_go_fmt/ast_composite_lit.go
+	// other tests: ../../../testfiles/with_go_fmt/strict/ast_composite_lit.go
 
 	// bad right - previous, one line
 	_ = []int{1, 2, 3,

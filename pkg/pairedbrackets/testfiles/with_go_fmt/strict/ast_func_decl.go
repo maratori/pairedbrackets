@@ -17,4 +17,4 @@ func (methodReceiver,
 ) badRightPrevious() { // want `^right parenthesis should be on the previous line$`
 }
 
-// tests for body: ../../testdata/no_go_fmt/ast_func_decl.go
+// tests for body: ../../../testdata/no_go_fmt/strict/ast_func_decl.go

@@ -6,7 +6,7 @@ import (
 
 func _() {
 
-	// other tests: ../../testfiles/with_go_fmt/ast_call_expr.go
+	// other tests: ../../../testfiles/with_go_fmt/strict/ast_call_expr.go
 
 	// bad right - previous, one line
 	fmt.Printf("%s %d", "xxx", 10,

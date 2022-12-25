@@ -42,7 +42,7 @@ func _() {
 		1, 2, 3} // want `^right brace should be on the next line$`
 
 	// bad right - previous, one line
-	// ../../testdata/no_go_fmt/ast_composite_lit.go
+	// ../../../testdata/no_go_fmt/strict/ast_composite_lit.go
 
 	// bad right - previous, multiline
 	_ = []any{1, 2, 3, `x

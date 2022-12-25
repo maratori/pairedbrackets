@@ -1,6 +1,6 @@
 package x
 
-// tests for receiver: ../../testfiles/with_go_fmt/ast_func_decl.go
+// tests for receiver: ../../../testfiles/with_go_fmt/strict/ast_func_decl.go
 
 // good - external non-Go function produces [ast.FuncDecl].Body == nil
 func _()

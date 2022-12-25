@@ -39,7 +39,7 @@ func _() {
 		bool] // want `^right bracket should be on the next line$`
 
 	// bad right - previous, one line
-	// ../../testdata/no_go_fmt/ast_index_list_expr.go
+	// ../../../testdata/no_go_fmt/strict/ast_index_list_expr.go
 
 	// bad right - previous, multiline
 	type _ x[int, string, struct {
