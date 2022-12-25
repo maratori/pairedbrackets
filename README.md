@@ -113,9 +113,6 @@ is multiline`)
 
 </td></tr>
 </tbody></table>
-
-Functions from `github.com/stretchr/testify/assert` and `github.com/stretchr/testify/require` are ignored by default (see [config](#flag--ignore-func-calls)).
-
 </details>
 
 <details><summary>Composite literal</summary>
@@ -477,14 +474,6 @@ go install github.com/maratori/pairedbrackets@latest
 ```shell
 pairedbrackets ./...
 ```
-
-### Flag `-ignore-func-calls`
-
-Flag `-ignore-func-calls` is a comma separated list of regexp patterns of fully qualified function calls to ignore. Default is `github.com/stretchr/testify/assert,github.com/stretchr/testify/require`.
-
-Fully qualified function examples:
-- Function: `github.com/stretchr/testify/require.Equal`
-- Method: `(*github.com/stretchr/testify/assert.Assertions).Equal`
 
 
 ## License
