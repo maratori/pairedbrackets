@@ -119,26 +119,26 @@ type runner struct {
 //   - [*ast.TypeSpec]
 func run(r runner) (interface{}, error) {
 	filter := []ast.Node{ // alphabet order
-		&ast.CallExpr{},
-		&ast.CompositeLit{},
-		&ast.ForStmt{},
-		&ast.FuncDecl{},
-		&ast.FuncLit{},
-		&ast.FuncType{},
-		&ast.GenDecl{},
-		&ast.IfStmt{},
-		&ast.IndexExpr{},
-		&ast.IndexListExpr{},
-		&ast.InterfaceType{},
-		&ast.ParenExpr{},
-		&ast.RangeStmt{},
-		&ast.SelectStmt{},
-		&ast.SliceExpr{},
-		&ast.StructType{},
-		&ast.SwitchStmt{},
-		&ast.TypeAssertExpr{},
-		&ast.TypeSpec{},
-		&ast.TypeSwitchStmt{},
+		new(ast.CallExpr),
+		new(ast.CompositeLit),
+		new(ast.ForStmt),
+		new(ast.FuncDecl),
+		new(ast.FuncLit),
+		new(ast.FuncType),
+		new(ast.GenDecl),
+		new(ast.IfStmt),
+		new(ast.IndexExpr),
+		new(ast.IndexListExpr),
+		new(ast.InterfaceType),
+		new(ast.ParenExpr),
+		new(ast.RangeStmt),
+		new(ast.SelectStmt),
+		new(ast.SliceExpr),
+		new(ast.StructType),
+		new(ast.SwitchStmt),
+		new(ast.TypeAssertExpr),
+		new(ast.TypeSpec),
+		new(ast.TypeSwitchStmt),
 	}
 	astInspector := r.pass.ResultOf[inspect.Analyzer].(*inspector.Inspector) //nolint:errcheck // let's panic
 	astInspector.Preorder(filter, func(node ast.Node) {
@@ -289,7 +289,7 @@ func boundaries[N ast.Node](list []N) (token.Pos, token.Pos, token.Pos, bool) {
 	firstPos, lastPos, lastEnd := token.NoPos, token.NoPos, token.NoPos
 	var last N
 	for _, n := range list {
-		if any(n) == nil {
+		if any(n) == nil { //nolint:govet // false positive
 			continue
 		}
 

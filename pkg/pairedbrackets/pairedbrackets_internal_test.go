@@ -23,7 +23,7 @@ func TestGenDeclElement(t *testing.T) {
 		tk, el := tk, el
 		t.Run(fmt.Sprintf("%s -> %s", tk, el), func(t *testing.T) {
 			t.Parallel()
-			actual := genDeclElement(&ast.GenDecl{Tok: tk})
+			actual := genDeclElement(&ast.GenDecl{Tok: tk}) //nolint:exhaustruct // other fields don't matter
 			assert.Equal(t, el, actual)
 		})
 	}
@@ -36,9 +36,12 @@ func TestBoundariesNotSorted(t *testing.T) {
 		&ast.Ident{
 			NamePos: 100,
 			Name:    "xxx",
+			Obj:     nil,
 		},
 		&ast.Ident{
 			NamePos: 10,
+			Name:    "yyy",
+			Obj:     nil,
 		},
 	})
 	assert.EqualValues(t, 10, firstPos)
