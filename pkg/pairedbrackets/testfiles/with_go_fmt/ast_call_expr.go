@@ -30,7 +30,7 @@ func _() {
 	)
 
 	// good - last item exception
-	http.HandleFunc("/api/v1", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/api/v1", func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	})
 
@@ -53,7 +53,7 @@ func _() {
 	// ../../testdata/no_go_fmt/ast_call_expr.go
 
 	// bad right - previous, multiline
-	http.HandleFunc("/api/v1", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/api/v1", func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	},
 	) // want `^right parenthesis should be on the previous line$`
