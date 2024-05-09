@@ -1,4 +1,4 @@
-# pairedbrackets <br> [![go.mod version][go-img]][go-url] [![CI][ci-img]][ci-url] [![Codecov][codecov-img]][codecov-url] [![Codebeat][codebeat-img]][codebeat-url] [![Maintainability][codeclimate-img]][codeclimate-url] [![Go Report Card][goreportcard-img]][goreportcard-url] [![License][license-img]][license-url] [![Go Reference][godoc-img]][godoc-url]
+# pairedbrackets <br> [![go minimal version][go-img]][go-url] [![go tested version][go-latest-img]][go-latest-url] [![CI][ci-img]][ci-url] [![Codecov][codecov-img]][codecov-url] [![Codebeat][codebeat-img]][codebeat-url] [![Maintainability][codeclimate-img]][codeclimate-url] [![Go Report Card][goreportcard-img]][goreportcard-url] [![License][license-img]][license-url] [![Go Reference][godoc-img]][godoc-url]
 
 Linter checks formatting of paired brackets (inspired by [this article](https://www.yegor256.com/2014/10/23/paired-brackets-notation.html)).
 
@@ -483,6 +483,8 @@ pairedbrackets ./...
 
 [go-img]: https://img.shields.io/github/go-mod/go-version/maratori/pairedbrackets
 [go-url]: /go.mod
+[go-latest-img]: https://img.shields.io/github/go-mod/go-version/maratori/pairedbrackets?filename=.github%2Flatest-deps%2Fgo.mod&label=tested
+[go-latest-url]: /.github/latest-deps/go.mod
 [ci-img]: https://github.com/maratori/pairedbrackets/actions/workflows/ci.yml/badge.svg
 [ci-url]: https://github.com/maratori/pairedbrackets/actions/workflows/ci.yml
 [codecov-img]: https://codecov.io/gh/maratori/pairedbrackets/branch/main/graph/badge.svg?token=EGSPoXDeXP
