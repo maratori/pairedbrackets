@@ -289,7 +289,7 @@ func boundaries[N ast.Node](list []N) (token.Pos, token.Pos, token.Pos, bool) {
 	firstPos, lastPos, lastEnd := token.NoPos, token.NoPos, token.NoPos
 	var last N
 	for _, n := range list {
-		if any(n) == nil { //nolint:govet // false positive
+		if any(n) == nil {
 			continue
 		}
 
