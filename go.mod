@@ -1,6 +1,6 @@
 module github.com/maratori/pairedbrackets
 
-go 1.18 // tested all go versions from 1.18 to 1.22
+go 1.18 // tested all go versions from 1.18 to 1.23
 
 require (
 	github.com/stretchr/testify v1.1.1
