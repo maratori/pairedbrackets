@@ -20,7 +20,6 @@ func TestGenDeclElement(t *testing.T) {
 		token.VAR:    Variable,
 	}
 	for tk, el := range tests {
-		tk, el := tk, el
 		t.Run(fmt.Sprintf("%s -> %s", tk, el), func(t *testing.T) {
 			t.Parallel()
 			actual := genDeclElement(&ast.GenDecl{Tok: tk}) //nolint:exhaustruct // other fields don't matter
