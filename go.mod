@@ -1,6 +1,6 @@
 module github.com/maratori/pairedbrackets
 
-go 1.18 // minimal supported version 1.18, tested all versions up to 1.24
+go 1.22 // minimal supported version 1.22, tested all versions up to 1.24
 
 require (
 	github.com/stretchr/testify v1.1.1
