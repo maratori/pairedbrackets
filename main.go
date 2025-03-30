@@ -12,8 +12,9 @@ import (
 	"path/filepath"
 	"regexp"
 
-	"github.com/maratori/pairedbrackets/pkg/pairedbrackets"
 	"golang.org/x/tools/go/analysis/singlechecker"
+
+	"github.com/maratori/pairedbrackets/pkg/pairedbrackets"
 )
 
 //go:embed pkg

@@ -1,8 +1,9 @@
 package main
 
 import (
-	"github.com/maratori/pairedbrackets/pkg/pairedbrackets"
 	"golang.org/x/tools/go/analysis"
+
+	"github.com/maratori/pairedbrackets/pkg/pairedbrackets"
 )
 
 var /* const */ AnalyzerPlugin = Plugin{} //nolint:gochecknoglobals // const

@@ -4,8 +4,9 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/maratori/pairedbrackets/pkg/pairedbrackets"
 	"golang.org/x/tools/go/analysis/analysistest"
+
+	"github.com/maratori/pairedbrackets/pkg/pairedbrackets"
 )
 
 func TestAnalyzer_WithGofmt(t *testing.T) {
