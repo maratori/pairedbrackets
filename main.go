@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"embed"
 	"errors"
 	"flag"
@@ -9,8 +10,10 @@ import (
 	"io/fs"
 	"os"
 	"os/exec"
+	"os/signal"
 	"path/filepath"
 	"regexp"
+	"syscall"
 
 	"golang.org/x/tools/go/analysis/singlechecker"
 
@@ -64,12 +67,15 @@ func main() {
 }
 
 func buildPlugin(goPath string, linterPath string, outputPath string) error {
+	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGTERM, syscall.SIGINT)
+	defer stop()
+
 	goPath, linterPath, outputPath, err := resolvePaths(goPath, linterPath, outputPath)
 	if err != nil {
 		return err
 	}
 
-	output, err := exec.Command(goPath, "version", "-m", linterPath).CombinedOutput()
+	output, err := exec.CommandContext(ctx, goPath, "version", "-m", linterPath).CombinedOutput()
 	if err != nil {
 		return fmt.Errorf("can't get version of golangci-lint dependencies: %w", err)
 	}
@@ -96,12 +102,13 @@ func buildPlugin(goPath string, linterPath string, outputPath string) error {
 		return fmt.Errorf("can't change wording directory: %w", err)
 	}
 
-	output, err = exec.Command(goPath, "get", lib).CombinedOutput()
+	output, err = exec.CommandContext(ctx, goPath, "get", lib).CombinedOutput()
 	if err != nil {
 		return fmt.Errorf("can't get %s: %w\n%s", lib, err, output)
 	}
 
-	output, err = exec.Command(
+	output, err = exec.CommandContext(
+		ctx,
 		goPath,
 		"build",
 		"-buildmode=plugin",
