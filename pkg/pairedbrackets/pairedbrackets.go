@@ -50,7 +50,7 @@ func NewAnalyzer() *analysis.Analyzer {
 		Doc:      "linter checks formatting of paired brackets",
 		Requires: []*analysis.Analyzer{inspect.Analyzer},
 		Flags:    fs,
-		Run: func(pass *analysis.Pass) (interface{}, error) {
+		Run: func(pass *analysis.Pass) (any, error) {
 			return run(runner{
 				pass: pass,
 			})
@@ -117,7 +117,7 @@ type runner struct {
 //   - [*ast.InterfaceType]
 //   - [*ast.StructType]
 //   - [*ast.TypeSpec]
-func run(r runner) (interface{}, error) {
+func run(r runner) (any, error) {
 	filter := []ast.Node{ // alphabet order
 		new(ast.CallExpr),
 		new(ast.CompositeLit),
