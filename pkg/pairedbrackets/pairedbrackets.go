@@ -168,9 +168,11 @@ func run(r runner) (any, error) {
 				validateBlock(r, block)
 			}
 		case *ast.IndexExpr:
-			validate(r, Bracket, n.Lbrack, n.Rbrack, []ast.Expr{n.Index}, Unknown) // unknown because it may be several types
+			// unknown because it may be several types
+			validate(r, Bracket, n.Lbrack, n.Rbrack, []ast.Expr{n.Index}, Unknown)
 		case *ast.IndexListExpr:
-			validate(r, Bracket, n.Lbrack, n.Rbrack, n.Indices, Unknown) // unknown because it may be several types
+			// unknown because it may be several types
+			validate(r, Bracket, n.Lbrack, n.Rbrack, n.Indices, Unknown)
 		case *ast.InterfaceType:
 			validateFieldList(r, Brace, n.Methods, Method)
 		case *ast.ParenExpr:
