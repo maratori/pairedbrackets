@@ -7,6 +7,7 @@ import (
 )
 
 func TestPlugin(t *testing.T) {
+	t.Parallel()
 	analyzers := AnalyzerPlugin.GetAnalyzers()
 	require.Len(t, analyzers, 1)
 	require.Equal(t, "pairedbrackets", analyzers[0].Name)
