@@ -22,7 +22,7 @@ func TestGenDeclElement(t *testing.T) {
 	for tk, el := range tests {
 		t.Run(fmt.Sprintf("%s -> %s", tk, el), func(t *testing.T) {
 			t.Parallel()
-			actual := genDeclElement(&ast.GenDecl{Tok: tk}) //nolint:exhaustruct // other fields don't matter
+			actual := genDeclElement(&ast.GenDecl{Tok: tk}) //nolint:exhaustruct_v5 // other fields don't matter
 			assert.Equal(t, el, actual)
 		})
 	}
